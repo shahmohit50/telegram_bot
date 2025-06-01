@@ -93,7 +93,7 @@ app.post("/webhook", async (req, res) => {
 // Endpoint to set up webhook
 app.get("/setup-webhook", async (req, res) => {
   try {
-    const webhookUrl = `${req.protocol}://${req.get("host")}/webhook`;
+    const webhookUrl = `https://telegram-bot-cki3.onrender.com/webhook`;
     console.log("Webhook URL:", webhookUrl);
     console.log("Telegram Bot Token:", TELEGRAM_BOT_TOKEN); // For debug
 
