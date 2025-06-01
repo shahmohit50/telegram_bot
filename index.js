@@ -93,19 +93,24 @@ app.post("/webhook", async (req, res) => {
 // Endpoint to set up webhook
 app.get("/setup-webhook", async (req, res) => {
   try {
-    const webhookUrl = `${req.protocol}://${req.get('host')}/webhook`;
+    const webhookUrl = `${req.protocol}://${req.get("host")}/webhook`;
+    console.log("Webhook URL:", webhookUrl);
+    console.log("Telegram Bot Token:", TELEGRAM_BOT_TOKEN); // For debug
+
     const response = await axios.post(`${TELEGRAM_API}/setWebhook`, {
       url: webhookUrl
     });
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       webhookUrl,
-      telegramResponse: response.data 
+      telegramResponse: response.data
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
+    console.error("Error setting webhook:", error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message
     });
   }
 });
