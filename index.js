@@ -1,4 +1,4 @@
-// const express = require("express");
+ // const express = require("express");
 // const axios = require("axios");
 // const app = express();
 // app.use(express.json());
@@ -61,7 +61,7 @@ app.post("/webhook", async (req, res) => {
   if (!message || !chatId) return res.sendStatus(200);
 
   try {
-    if (message.includes("https://goo")) {
+    if (message.includes("https://lid")) {
       const scraped = await axios.get(message, {
         headers: {
           Accept: "application/rss+xml",
@@ -70,10 +70,10 @@ app.post("/webhook", async (req, res) => {
         },
       });
 
-      await axios.post(`${TELEGRAM_API}/sendMessage`, {
-        chat_id: chatId,
-        text: `Scraped content:\n\n${scraped.data.substring(0, 1000)}`, // keep it short
-      });
+//      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+//        chat_id: chatId,
+//        text: `Scraped content:\n\n${scraped.data.substring(0, 1000)}`, // keep it short
+//      });
     } else if (message === "http://") {
       await axios.get(message); // will likely fail, but mimics your original condition
     } else {
