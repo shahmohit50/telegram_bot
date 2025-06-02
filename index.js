@@ -69,11 +69,19 @@ app.post("/webhook", async (req, res) => {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136.0.0.0 Safari/537.36",
         },
       });
-
-//      await axios.post(`${TELEGRAM_API}/sendMessage`, {
-//        chat_id: chatId,
-//        text: `Scraped content:\n\n${scraped.data.substring(0, 1000)}`, // keep it short
-//      });
+      const bodyMatch = scraped.data.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      const bodyContent = bodyMatch ? bodyMatch[1].replace(/<[^>]+>/g, '').trim() : 'No body content found.';
+      let cleanedContent = bodyContent.replace(/\(function\s*\([\s\S]*?\)\s*\{[\s\S]*?\}\s*\)\s*\([\s\S]*?\);?/g, '').trim(); // Clean up whitespace
+      let index = cleanedContent.indexOf("Son Of The Dragon Chapter");
+      let edContent = index !== -1 ? cleanedContent.substring(index) : "Phrase not found.";
+      edContent = edContent.trim();
+      edContent = edContent.replace(/"function"==typeof\s+[a-zA-Z0-9_]+\s*&&[\s\S]*?;/g, '');
+      edContent = edContent.replace(/if\s*\([^)]+\)\s*\{[^}]*\}/g, '');
+      edContent = edContent.replace(/[\n\t]/g, '');
+     await axios.post(`${TELEGRAM_API}/sendMessage`, {
+       chat_id: chatId,
+       text: `Scraped content:\n\n${edContent.substring(0, 3600)}`, // keep it short
+     });
     } else if (message === "http://") {
       await axios.get(message); // will likely fail, but mimics your original condition
     } else {
