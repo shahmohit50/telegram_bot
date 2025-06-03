@@ -1,4 +1,4 @@
- // const express = require("express");
+// const express = require("express");
 // const axios = require("axios");
 // const app = express();
 // app.use(express.json());
@@ -70,18 +70,42 @@ app.post("/webhook", async (req, res) => {
         },
       });
       const bodyMatch = scraped.data.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+
       const bodyContent = bodyMatch ? bodyMatch[1].replace(/<[^>]+>/g, '').trim() : 'No body content found.';
       let cleanedContent = bodyContent.replace(/\(function\s*\([\s\S]*?\)\s*\{[\s\S]*?\}\s*\)\s*\([\s\S]*?\);?/g, '').trim(); // Clean up whitespace
+
+      const phrase = "Son Of The Dragon Chapter";
+      const regex = new RegExp(`(${phrase})(?!.*${phrase}).*$`, "gis");
+      cleanedContent = cleanedContent.replace(regex, "$1");
       let index = cleanedContent.indexOf("Son Of The Dragon Chapter");
       let edContent = index !== -1 ? cleanedContent.substring(index) : "Phrase not found.";
       edContent = edContent.trim();
+
+      edContent = edContent.replace(/\n\t+/g, '');
+      edContent = edContent.replace(/\t\n+/g, '');
       edContent = edContent.replace(/"function"==typeof\s+[a-zA-Z0-9_]+\s*&&[\s\S]*?;/g, '');
       edContent = edContent.replace(/if\s*\([^)]+\)\s*\{[^}]*\}/g, '');
-      edContent = edContent.replace(/[\n\t]/g, '');
-     await axios.post(`${TELEGRAM_API}/sendMessage`, {
-       chat_id: chatId,
-       text: `Scraped content:\n\n${edContent.substring(0, 3600)}`, // keep it short
-     });
+      edContent = edContent.replace(/\\n\s*/g, '\n');
+      edContent = edContent.replace(/\\n\s*\\n\s*\\n/g, '\n\n');
+      edContent = edContent.replace(/\\n\s*\\n/g, '\n');
+      edContent = edContent.replace(/\\n/g, '\n');
+      edContent = edContent.replace(/\n{3,}/g, '\n\n');
+      if (edContent.length > 3900) {
+        for (let i = 0; i < edContent.length; i += 3900) {
+          // bot.sendMessage(chatId, edContent.substring(i, i + 3900));
+          await axios.post(`${TELEGRAM_API}/sendMessage`, {
+            chat_id: chatId,
+            text: `Scraped content:\n\n${edContent.substring(i, i + 3900)}`, // keep it short
+          });
+        }
+      } else {
+        await axios.post(`${TELEGRAM_API}/sendMessage`, {
+          chat_id: chatId,
+          text: `Scraped content:\n\n${edContent}`, // keep it short
+        });
+      }
+
+
     } else if (message === "http://") {
       await axios.get(message); // will likely fail, but mimics your original condition
     } else {
