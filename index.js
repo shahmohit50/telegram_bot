@@ -62,7 +62,10 @@ app.post("/webhook", async (req, res) => {
 
   try {
     if (message.includes("https://lid")) {
-      const scraped = await axios.get(message, {
+      for( let j = 0; j < 6; j++) {
+      let number = Number(message.match(/(\d+)/)[1])+ j;
+      let url = message.slice(0, -5) + number;
+      const scraped = await axios.get(url, {
         headers: {
           Accept: "application/rss+xml",
           "User-Agent":
@@ -78,6 +81,9 @@ app.post("/webhook", async (req, res) => {
       const regex = new RegExp(`(${phrase})(?!.*${phrase}).*$`, "gis");
       cleanedContent = cleanedContent.replace(regex, "$1");
       let index = cleanedContent.indexOf("Son Of The Dragon Chapter");
+      if (index === -1) {
+        exit;
+      }
       let edContent = index !== -1 ? cleanedContent.substring(index) : "Phrase not found.";
       edContent = edContent.trim();
 
@@ -105,7 +111,7 @@ app.post("/webhook", async (req, res) => {
         });
       }
 
-
+    }
     } else if (message === "http://") {
       await axios.get(message); // will likely fail, but mimics your original condition
     } else {
