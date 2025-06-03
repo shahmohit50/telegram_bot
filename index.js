@@ -95,13 +95,13 @@ app.post("/webhook", async (req, res) => {
           // bot.sendMessage(chatId, edContent.substring(i, i + 3900));
           await axios.post(`${TELEGRAM_API}/sendMessage`, {
             chat_id: chatId,
-            text: `Scraped content:\n\n${edContent.substring(i, i + 3900)}`, // keep it short
+            text: `${edContent.substring(i, i + 3900)}`, // keep it short
           });
         }
       } else {
         await axios.post(`${TELEGRAM_API}/sendMessage`, {
           chat_id: chatId,
-          text: `Scraped content:\n\n${edContent}`, // keep it short
+          text: `${edContent}`, // keep it short
         });
       }
 
