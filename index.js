@@ -74,7 +74,7 @@ app.post("/webhook", async (req, res) => {
       });
       const bodyMatch = scraped.data.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
       if(!bodyMatch){
-      exit;
+      return;
       }
       const bodyContent = bodyMatch ? bodyMatch[1].replace(/<[^>]+>/g, '').trim() : 'No body content found.';
       let cleanedContent = bodyContent.replace(/\(function\s*\([\s\S]*?\)\s*\{[\s\S]*?\}\s*\)\s*\([\s\S]*?\);?/g, '').trim(); // Clean up whitespace
@@ -84,7 +84,7 @@ app.post("/webhook", async (req, res) => {
       cleanedContent = cleanedContent.replace(regex, "$1");
       let index = cleanedContent.indexOf("Son Of The Dragon Chapter");
       if (index === -1) {
-        exit;
+        return;
       }
       let edContent = index !== -1 ? cleanedContent.substring(index) : "Phrase not found.";
       edContent = edContent.trim();
