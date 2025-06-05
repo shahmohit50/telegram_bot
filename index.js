@@ -62,7 +62,7 @@ app.post("/webhook", async (req, res) => {
 
   try {
     if (message.includes("https://lid")) {
-      for( let j = 0; j < 6; j++) {
+      for( let j = 0; j < 3; j++) {
       let number = Number(message.match(/(\d+)/)[1])+ j;
       let url = message.slice(0, -5) + number;
       const scraped = await axios.get(url, {
@@ -73,7 +73,9 @@ app.post("/webhook", async (req, res) => {
         },
       });
       const bodyMatch = scraped.data.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-
+      if(!bodyMatch){
+      exit;
+      }
       const bodyContent = bodyMatch ? bodyMatch[1].replace(/<[^>]+>/g, '').trim() : 'No body content found.';
       let cleanedContent = bodyContent.replace(/\(function\s*\([\s\S]*?\)\s*\{[\s\S]*?\}\s*\)\s*\([\s\S]*?\);?/g, '').trim(); // Clean up whitespace
 
